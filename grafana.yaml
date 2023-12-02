@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  # creationTimestamp: "2023-03-02T23:51:55Z"
+  generateName: grafana-57454c95cb-
+  labels:
+    app: grafana
+    pod-template-hash: 57454c95cb
+  name: grafana-57454c95cb-f9js5
+  namespace: default
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: grafana-57454c95cb
+    uid: 92d54851-ff54-4c2a-b6fa-20a98b2a585b
+  resourceVersion: "1203"
+  uid: 87db48b0-d176-428c-9fa5-2d5d39f25867
+spec:
+  automountServiceAccountToken: true
+  containers:
+  - env:
+    - name: FLAG
+      value: flag{288232b2f03b1ec422c5dae50f14061f}
+    image: grafana/grafana-enterprise:8.3.0-beta2
+    imagePullPolicy: IfNotPresent
+    name: grafana
+    ports:
+    - containerPort: 3000
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-jrq2t
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: minikube
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  # serviceAccount: developer
+  # serviceAccountName: developer
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-jrq2t
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+# status:
+#   conditions:
+#   - lastProbeTime: null
+#     lastTransitionTime: "2023-03-02T23:51:55Z"
+#     status: "True"
+#     type: Initialized
+#   - lastProbeTime: null
+#     lastTransitionTime: "2023-12-02T07:44:56Z"
+#     status: "True"
+#     type: Ready
+#   - lastProbeTime: null
+#     lastTransitionTime: "2023-12-02T07:44:56Z"
+#     status: "True"
+#     type: ContainersReady
+#   - lastProbeTime: null
+#     lastTransitionTime: "2023-03-02T23:51:55Z"
+#     status: "True"
+#     type: PodScheduled
+#   containerStatuses:
+#   - containerID: docker://0dda0973258dc6dd4c065bfc1c54132182b6fff18b01f6533878b1fff8c6cdef
+#     image: grafana/grafana-enterprise:8.3.0-beta2
+#     imageID: docker-pullable://grafana/grafana-enterprise@sha256:892120b82935d1d0690a7a978a492b1ce1ff1b8fdc9adacf12174c2cf57fa1c5
+#     lastState:
+#       terminated:
+#         containerID: docker://a6c1d3af1f09cdde4e2ca100ae7e6b4da0a95781defbc8d7ff12ba6c7786b04d
+#         exitCode: 255
+#         finishedAt: "2023-03-03T00:24:25Z"
+#         reason: Error
+#         startedAt: "2023-03-02T23:56:24Z"
+#     name: grafana
+#     ready: true
+#     restartCount: 2
+#     started: true
+#     state:
+#       running:
+#         startedAt: "2023-12-02T07:44:56Z"
+#   hostIP: 192.168.49.2
+#   phase: Running
+#   podIP: 172.17.0.4
+#   podIPs:
+#   - ip: 172.17.0.4
+#   qosClass: BestEffort
+#   startTime: "2023-03-02T23:51:55Z"

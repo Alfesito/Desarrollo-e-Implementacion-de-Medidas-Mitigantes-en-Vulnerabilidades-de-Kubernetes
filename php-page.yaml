@@ -1,23 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: php-page
+  name: php-page-service
   labels:
     app: php-page
-    service: php-page
+    service: php-page-service
+  namespace: default
 spec:
   type: LoadBalancer
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
+    - port: 80
   selector:
     app: php-page
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: php-page
+  name: php-page-deployment
   labels:
     app: php-page
     version: v1
@@ -34,7 +33,7 @@ spec:
         version: v1
     spec:
       containers:
-      - name: php-page
+      - name: php-page-deployment
         image: alfesito/php-page:v1
         imagePullPolicy: IfNotPresent
         ports:

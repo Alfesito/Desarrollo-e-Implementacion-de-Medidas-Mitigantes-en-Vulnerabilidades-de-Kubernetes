@@ -10,6 +10,15 @@ spec:
     app: mysql
   clusterIP: None
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: back
+  name: mysql-secret
+type: Opaque
+data:
+  MYSQL_ROOT_PASSWORD: cEBzc3dvcmQ=
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -31,9 +40,11 @@ spec:
       - name: mysql
         image: alfesito/mysql
         env:
-          # Use secret in real usage
         - name: MYSQL_ROOT_PASSWORD
-          value: p@ssword
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_ROOT_PASSWORD
         ports:
         - containerPort: 3306
           name: mysql

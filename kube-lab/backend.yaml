@@ -39,9 +39,9 @@ spec:
       containers:
       - name: mysql
         image: alfesito/mysql
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: "kubectl get secrets -n back"
+        envFrom:
+        - secretRef:
+            name: mysql-secret
         ports:
         - containerPort: 3306
           name: mysql

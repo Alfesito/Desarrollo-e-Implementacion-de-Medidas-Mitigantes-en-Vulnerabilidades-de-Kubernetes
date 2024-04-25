@@ -30,6 +30,7 @@ kubectl exec -it "$pod_name" -n back -- bash -c 'mysql -u root -pp@ssword < /tmp
 kubectl exec -it "$pod_name" -n back -- rm /tmp/init.sql
 
 if [ "$is_minikube" == "s" ]; then
+    echo "Habilitando IP externa para el servicio"
     minikube service --all
 else
     php_page_ip=""

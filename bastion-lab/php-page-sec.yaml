@@ -60,7 +60,7 @@ spec:
       containers:
       - name: php-page
         image: alfesito/php-page:v1
-        imagePullPolicy: IfNotPresent
+        #imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
 ---

@@ -12,6 +12,7 @@ sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRate
 sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimits,AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
+kubectl create namespace default 2>/dev/null
 kubectl apply -f grafana-sec.yaml
 kubectl apply -f php-page-sec.yamls
 kubectl create namespace back 2>/dev/null
@@ -30,7 +31,7 @@ while [ "$pod_status" != "Running" ]; do
     pod_status=$(kubectl get pods -n back "$pod_name" -o jsonpath='{.status.phase}')
     sleep 1
 done
-kubectl cp ./docker-images/mysql/init.sql "$pod_name":/tmp/init.sql -n back
+kubectl cp .init.sql "$pod_name":/tmp/init.sql -n back
 kubectl exec -it "$pod_name" -n back -- bash -c 'mysql -u root -pp@ssword < /tmp/init.sql'
 kubectl exec -it "$pod_name" -n back -- rm /tmp/init.sql
 

@@ -4,13 +4,12 @@
 snap start microk8s
 microk8s start
 alias kubectl='microk8s kubectl'
-# Aplicamos el encription provider
-sh ./encription-provider/encription_provider.sh
 # Aplicamos el controlador de acceso AllwaysPullImages
 #pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
 sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' /var/snap/microk8s/6641/args/kube-apiserver
 sudo sed -i 's/--enable-admission-plugins=EventRateLimits/--enable-admission-plugins=EventRateLimits,AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
-
+# Aplicamos el encription provider y reiniciamos el servicio kube-apiserver
+sh ./encription-provider/encription_provider.sh
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl create namespace default 2>/dev/null
 kubectl apply -f grafana-sec.yaml

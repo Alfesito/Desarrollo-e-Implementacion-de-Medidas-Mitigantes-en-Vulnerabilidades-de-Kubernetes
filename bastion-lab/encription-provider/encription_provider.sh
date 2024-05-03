@@ -20,7 +20,7 @@ resources:
 EOF
 dir_actual=$(pwd)
 file_name=pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
-echo "--encryption-provider-config=$dir_actual/encryption_provider.yaml" >> "$file_name"
+echo "--encryption-provider-config=$dir_actual/encryption_provider.yaml" >> /var/snap/microk8s/6641/args/kube-apiserver
 cd ..
 # Se reinicia kubelite para cargar la nueva configuración
 sudo systemctl restart snap.microk8s.daemon-kubelite

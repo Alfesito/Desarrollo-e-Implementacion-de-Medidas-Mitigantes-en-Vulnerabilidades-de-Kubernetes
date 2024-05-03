@@ -14,23 +14,28 @@ if [ "$microk8s" == "s" ]; then
     # Aplicamos el encription provider
     sh ./encription-provider/encription_provider.sh
     # Aplicamos el controlador de acceso AllwaysPullImages
-    sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimit, AllwaysPullImages/' /var/snap/microk8s/current/args/kube-apiserver
+    if grep -q -- "--enable-admission-plugins=EventRateLimit AllwaysPullImages" /var/snap/microk8s/current/args/kube-apiserver; then
+        echo "La configuración ya contiene AllwaysPullImages."
+    else
+        # Si la línea no contiene AllwaysPullImages, ejecuta el comando para agregarlo
+        sudo sed -i 's/--enable-admission-plugins=/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' /var/snap/microk8s/current/args/kube-apiserver
+        echo "Se agregó AllwaysPullImages a la configuración."
+    fi
 fi
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl apply -f grafana_v2.yaml
 kubectl apply -f php-page_v2.yaml
+kubectl create namespace back 2>/dev/null
 kubectl apply -f backend_v2.yaml
 # Aplicamos el ingress security
 sh ./ingress-sec/ingress_sec.sh
 # Aplicamos el controlador de acceso PodSecurity
 kubectl label --overwrite ns default pod-security.kubernetes.io/enforce=restricted pod-security.kubernetes.io/enforce-version=v1.30
-kubectl create namespace back 2>/dev/null
 kubectl label --overwrite ns back pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/enforce-version=v1.30
 
 pod_name=$(kubectl get pods -n back | grep -e mysql | awk '{print $1}')
 pod_status=$(kubectl get pods -n back "$pod_name" -o jsonpath='{.status.phase}')
-
 while [ "$pod_status" != "Running" ]; do
     pod_status=$(kubectl get pods -n back "$pod_name" -o jsonpath='{.status.phase}')
     sleep 1

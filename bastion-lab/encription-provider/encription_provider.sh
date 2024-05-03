@@ -24,7 +24,10 @@ EOF
 file_name=/var/snap/microk8s/current/args/kubelite
 echo "--encryption-provider-config=$dir_actual/encryption_provider.yaml" >> "$file_name"
 cd ..
-
+# Se reinicia kubelite para cargar la nueva configuración
 sudo systemctl restart snap.microk8s.daemon-kubelite
-sleep 5
+while [[ $(systemctl is-active snap.microk8s.daemon-kubelite) != "active" ]]; do
+    sleep 1
+done
+
 kubectl get secrets --all-namespaces -o json | kubectl replace -f --all-namespaces -

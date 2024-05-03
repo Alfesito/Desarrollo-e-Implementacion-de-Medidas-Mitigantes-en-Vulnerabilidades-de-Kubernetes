@@ -1,23 +1,15 @@
 #!/bin/bash
 # Este script está creado para su uso con microk8s, si se utiliza otra herramienta, no se puede asegurar su total funcionamiento
-read -p "¿Vas a hacer uso microk8s? (s/n): " microk8s
 
-if [ true ]; then
-    snap start microk8s
-    microk8s start
-    alias kubectl='microk8s kubectl'
-    microk8s_status=$?
-    if [ $microk8s_status -ne 0 ]; then
-        echo "Error al iniciar microk8s. Saliendo del script."
-        exit 1
-    fi
-    # Aplicamos el encription provider
-    sh ./encription-provider/encription_provider.sh
-    # Aplicamos el controlador de acceso AllwaysPullImages
-    file_apiserver= pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
-    sudo sed -i "s/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/" "$file_apiserver"
-    sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' $file_apiserver
-fi
+snap start microk8s
+microk8s start
+alias kubectl='microk8s kubectl'
+# Aplicamos el encription provider
+sh ./encription-provider/encription_provider.sh
+# Aplicamos el controlador de acceso AllwaysPullImages
+file_apiserver= pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
+sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' /var/snap/microk8s/6641/args/kube-apiserver
+sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl apply -f grafana-sec.yaml

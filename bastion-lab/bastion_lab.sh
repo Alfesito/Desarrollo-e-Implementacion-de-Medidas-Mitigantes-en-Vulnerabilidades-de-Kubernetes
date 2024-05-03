@@ -9,11 +9,11 @@ sh ./encription-provider/encription_provider.sh
 # Aplicamos el controlador de acceso AllwaysPullImages
 #pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
 sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' /var/snap/microk8s/6641/args/kube-apiserver
-sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
+sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimits,AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl apply -f grafana-sec.yaml
-kubectl apply -f php-page-sec.yaml
+kubectl apply -f php-page-sec.yamls
 kubectl create namespace back 2>/dev/null
 kubectl apply -f backend-sec.yaml
 

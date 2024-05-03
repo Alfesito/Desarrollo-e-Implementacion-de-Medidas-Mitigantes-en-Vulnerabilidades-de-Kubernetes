@@ -14,13 +14,8 @@ if [ true ]; then
     # Aplicamos el encription provider
     sh ./encription-provider/encription_provider.sh
     # Aplicamos el controlador de acceso AllwaysPullImages
-    if grep -q -- "--enable-admission-plugins=EventRateLimit AllwaysPullImages" /var/snap/microk8s/current/args/kube-apiserver; then
-        echo "La configuración ya contiene AllwaysPullImages."
-    else
-        # Si la línea no contiene AllwaysPullImages, ejecuta el comando para agregarlo
-        sudo sed -i 's/--enable-admission-plugins=/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' /var/snap/microk8s/current/args/kube-apiserver
-        echo "Se agregó AllwaysPullImages a la configuración."
-    fi
+    file_apiserver=pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
+    sudo sed -i 's/--enable-admission-plugins=/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' $file_apiserver
 fi
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root

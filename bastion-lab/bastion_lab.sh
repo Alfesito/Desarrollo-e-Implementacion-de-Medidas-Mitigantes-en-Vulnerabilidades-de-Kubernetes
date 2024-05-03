@@ -29,7 +29,7 @@ kubectl apply -f php-page_v2.yaml
 kubectl create namespace back 2>/dev/null
 kubectl apply -f backend_v2.yaml
 # Aplicamos el ingress security
-sh ./ingress-sec/ingress_sec.sh
+#sh ./ingress-sec/ingress_sec.sh
 # Aplicamos el controlador de acceso PodSecurity
 kubectl label --overwrite ns default pod-security.kubernetes.io/enforce=restricted pod-security.kubernetes.io/enforce-version=v1.30
 kubectl label --overwrite ns back pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/enforce-version=v1.30

@@ -14,8 +14,9 @@ if [ true ]; then
     # Aplicamos el encription provider
     sh ./encription-provider/encription_provider.sh
     # Aplicamos el controlador de acceso AllwaysPullImages
-    file_apiserver=pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
-    sudo sed -i 's/--enable-admission-plugins=/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' $file_apiserver
+    file_apiserver= pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
+    sudo sed -i "s/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/" "$file_apiserver"
+    sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' $file_apiserver
 fi
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
@@ -23,8 +24,10 @@ kubectl apply -f grafana-sec.yaml
 kubectl apply -f php-page-sec.yaml
 kubectl create namespace back 2>/dev/null
 kubectl apply -f backend-sec.yaml
+
 # Aplicamos el ingress security
 #sh ./ingress-sec/ingress_sec.sh
+
 # Aplicamos el controlador de acceso PodSecurity
 kubectl label --overwrite ns default pod-security.kubernetes.io/enforce=restricted pod-security.kubernetes.io/enforce-version=v1.30
 kubectl label --overwrite ns back pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/enforce-version=v1.30

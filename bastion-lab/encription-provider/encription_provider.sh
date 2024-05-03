@@ -19,7 +19,7 @@ resources:
       - identity: {}
 EOF
 dir_actual=$(pwd)
-file_name=/var/snap/microk8s/current/args/kubelite
+file_name=/var/snap/microk8s/current/args/kube-apiserver
 echo "--encryption-provider-config=$dir_actual/encryption_provider.yaml" >> "$file_name"
 cd ..
 # Se reinicia kubelite para cargar la nueva configuración

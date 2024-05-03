@@ -19,7 +19,7 @@ resources:
       - identity: {}
 EOF
 dir_actual=$(pwd)
-file_name=/var/snap/microk8s/current/args/kube-apiserver
+file_name=pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
 echo "--encryption-provider-config=$dir_actual/encryption_provider.yaml" >> "$file_name"
 cd ..
 # Se reinicia kubelite para cargar la nueva configuración

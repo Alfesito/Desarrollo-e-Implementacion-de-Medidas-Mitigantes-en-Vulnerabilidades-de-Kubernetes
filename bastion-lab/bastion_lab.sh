@@ -7,7 +7,7 @@ alias kubectl='microk8s kubectl'
 # Aplicamos el encription provider
 sh ./encription-provider/encription_provider.sh
 # Aplicamos el controlador de acceso AllwaysPullImages
-file_apiserver= pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
+pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
 sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' /var/snap/microk8s/6641/args/kube-apiserver
 sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimit,AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
 

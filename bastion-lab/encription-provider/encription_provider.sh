@@ -24,7 +24,9 @@ echo "--encryption-provider-config=$dir_actual/encryption_provider.yaml" >> /var
 cd ..
 # Se reinicia kubelite para cargar la nueva configuración
 sudo systemctl restart snap.microk8s.daemon-kubelite
-while [[ $(systemctl is-active snap.microk8s.daemon-kubelite) != "active" ]]; do
+status= $(systemctl is-active snap.microk8s.daemon-kubelite)
+while [[ $status != "active" ]]; do
     sleep 1
+    status= $(systemctl is-active snap.microk8s.daemon-kubelite)
 done
 #kubectl get secrets --all-namespaces -o json | kubectl replace -f --all-namespaces -

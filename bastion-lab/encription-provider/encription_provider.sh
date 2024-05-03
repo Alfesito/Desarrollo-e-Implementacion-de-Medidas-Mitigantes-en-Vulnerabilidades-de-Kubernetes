@@ -5,7 +5,7 @@ ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
 echo $ENCRYPTION_KEY
 
 cd encription-provider
-cat > encryption-provider.yaml <<EOF
+cat > encryption_provider.yaml <<EOF
 kind: EncryptionConfig
 apiVersion: v1
 resources:
@@ -19,7 +19,6 @@ resources:
       - identity: {}
 EOF
 dir_actual=$(pwd)
-#file_name=$(pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+')
 file_name=/var/snap/microk8s/current/args/kubelite
 echo "--encryption-provider-config=$dir_actual/encryption_provider.yaml" >> "$file_name"
 cd ..

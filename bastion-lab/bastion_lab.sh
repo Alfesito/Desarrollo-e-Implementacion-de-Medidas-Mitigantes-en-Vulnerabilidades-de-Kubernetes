@@ -2,10 +2,10 @@
 # Este script está creado para su uso con microk8s, si se utiliza otra herramienta, no se puede asegurar su total funcionamiento
 read -p "¿Vas a hacer uso microk8s? (s/n): " microk8s
 
-if [ "$microk8s" == "s" ]; then
+if [ true ]; then
     snap start microk8s
     microk8s start
-    export kubectl='microk8s kubectl'
+    alias kubectl='microk8s kubectl'
     microk8s_status=$?
     if [ $microk8s_status -ne 0 ]; then
         echo "Error al iniciar microk8s. Saliendo del script."
@@ -24,10 +24,10 @@ if [ "$microk8s" == "s" ]; then
 fi
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
-kubectl apply -f grafana_v2.yaml
-kubectl apply -f php-page_v2.yaml
+kubectl apply -f grafana-sec.yaml
+kubectl apply -f php-page-sec.yaml
 kubectl create namespace back 2>/dev/null
-kubectl apply -f backend_v2.yaml
+kubectl apply -f backend-sec.yaml
 # Aplicamos el ingress security
 #sh ./ingress-sec/ingress_sec.sh
 # Aplicamos el controlador de acceso PodSecurity

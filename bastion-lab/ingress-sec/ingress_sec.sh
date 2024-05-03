@@ -9,5 +9,5 @@ kubectl apply -f ingress-https.yaml
 cd ..
 # Escribir en /etc/hosts la ip y el dominio
 ip=$(hostname -I | awk '{print $1}')
-sudo sh -c 'echo "$ip  php.internal" >> /etc/hosts'
+sudo sh -c 'echo "'$ip'  php.internal" >> /etc/hosts'
 curl http://php.internal:30429

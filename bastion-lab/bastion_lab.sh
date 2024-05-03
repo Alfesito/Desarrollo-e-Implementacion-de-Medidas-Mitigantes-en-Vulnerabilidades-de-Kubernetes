@@ -11,12 +11,12 @@ if [ "$microk8s" == "s" ]; then
         echo "Error al iniciar microk8s. Saliendo del script."
         exit 1
     fi
+    # Aplicamos el encription provider
+    sh ./encription-provider/encription_provider.sh
+    # Aplicamos el controlador de acceso AllwaysPullImages
+    sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimit, AllwaysPullImages/' /var/snap/microk8s/current/args/kube-apiserver
 fi
 
-# Aplicamos el encription provider
-sh ./encription-provider/encription_provider.sh
-# Aplicamos el controlador de acceso AllwaysPullImages
-sudo sed -i 's/--enable-admission-plugins=EventRateLimit/--enable-admission-plugins=EventRateLimit, AllwaysPullImages/' /var/snap/microk8s/current/args/kube-apiserver
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl apply -f grafana_v2.yaml
 kubectl apply -f php-page_v2.yaml

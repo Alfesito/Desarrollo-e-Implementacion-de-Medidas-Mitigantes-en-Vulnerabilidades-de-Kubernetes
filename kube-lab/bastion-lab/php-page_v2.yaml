@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: web
+  namespace: default
+  annotations:
+    kubernetes.io/service-account-auto-created: "true"
+    kubernetes.io/service-account.name: web
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: php-token
+  namespace: default
+  annotations:
+    kubernetes.io/service-account.name: web
+type: kubernetes.io/service-account-token
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-page
+  labels:
+    app: php-page
+    service: php-page
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30000
+  selector:
+    app: php-page
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-page
+  namespace: default
+  labels:
+    app: php-page
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-page
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: php-page
+        version: v1
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 2000
+      serviceAccountName: default
+      containers:
+      - name: php-page
+        image: alfesito/php-page:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+---

@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: back
+  name: mysql
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: back
+  name: mysql-secret
+type: Opaque
+data:
+  MYSQL_ROOT_PASSWORD: cEBzc3dvcmQ=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: back
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      namespace: back
+      labels:
+        app: mysql
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 2000
+        fsGroup: 3000
+      containers:
+      - name: mysql
+        image: alfesito/mysql
+        envFrom:
+        - secretRef:
+            name: mysql-secret
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  namespace: back
+  name: mysql-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: back
+  name: mysql-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: adminer-deployment
+#   namespace: back
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: adminer
+#   template:
+#     metadata:
+#       labels:
+#         app: adminer
+#     spec:
+#       containers:
+#         - name: adminer
+#           image: alfesito/adminer
+#           ports:
+#             - containerPort: 8080
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: adminer-service
+#   namespace: back
+# spec:
+#   selector:
+#     app: adminer
+#   ports:
+#    - port: 8080

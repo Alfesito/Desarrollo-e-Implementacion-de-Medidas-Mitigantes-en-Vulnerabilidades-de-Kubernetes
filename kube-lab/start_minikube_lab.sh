@@ -1,5 +1,4 @@
 #!/bin/bash
-
 read -p "¿Vas a hacer uso Minikube? (s/n): " is_minikube
 
 if [ "$is_minikube" == "s" ]; then
@@ -39,7 +38,7 @@ else
     while [ "$php_page_ip" == "<pending>" ]; do
         php_page_ip=$(kubectl get svc php-page -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
         php_page_port=$(kubectl get svc php-page -o=jsonpath='{.spec.ports[0].targetPort}')
-        sleep 1
+        sleep 2
     done
 
     echo "La IP externa del servicio php-page es: $(kubectl get svc php-page -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'):$php_page_port"

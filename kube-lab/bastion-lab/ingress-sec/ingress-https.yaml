@@ -1,22 +1,22 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: demo-ingress
+  name: ingress-sec
   annotations:
      nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   tls:
   - hosts:
-      - example.internal
+      - php.internal
     secretName: tls-cert
   rules:
-  - host: example.internal
+  - host: php.internal
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: example-service
+            name: php-page
             port:
               number: 80

@@ -23,7 +23,7 @@ done
 
 mysql_pod_name=$(kubectl get pods -n back | grep -e mysql | awk '{print $1}')
 kubectl cp ./docker-images/mysql/init.sql "$mysql_pod_name":/tmp/init.sql -n back
-kubectl exec -it "$mysql_pod_name" -n back -- bash -c 'mysql -u root -pp@ssword < /tmp/init.sql'
-kubectl exec -it "$mysql_pod_name" -n back -- rm /tmp/init.sql
+kubectl exec -t "$mysql_pod_name" -n back -- bash -c 'mysql -u root -pp@ssword < /tmp/init.sql'
+kubectl exec -t "$mysql_pod_name" -n back -- rm /tmp/init.sql
 
 echo FIN

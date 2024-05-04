@@ -53,7 +53,7 @@ spec:
         app: php-page
         version: v1
     spec:
-      serviceAccountName: default
+      serviceAccountName: web
       containers:
       - name: php-page
         image: alfesito/php-page:v1

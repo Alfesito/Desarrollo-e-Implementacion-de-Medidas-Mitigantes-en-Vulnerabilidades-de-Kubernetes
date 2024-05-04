@@ -13,11 +13,9 @@ sh ./encription-provider/encription_provider.sh
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl create namespace back 2>/dev/null
 kubectl apply -f backend-sec.yaml
-kubectl create namespace default 2>/dev/null
+kubectl create namespace front 2>/dev/null
 kubectl apply -f grafana-sec.yaml
 kubectl apply -f php-page-sec.yaml
-kubectl create namespace back 2>/dev/null
-kubectl apply -f backend-sec.yaml
 
 # Aplicamos el ingress security
 #sh ./ingress-sec/ingress_sec.sh
@@ -28,7 +26,8 @@ kubectl label --overwrite ns back pod-security.kubernetes.io/enforce=baseline po
 
 sleep 10
 
-kubectl cp .init.sql "$pod_name":/tmp/init.sql -n back
+pod_name=$(kubectl get pods -n back | grep -e mysql | awk '{print $1}')
+kubectl cp ./data/init.sql "$pod_name":/tmp/init.sql -n back
 kubectl exec -it "$pod_name" -n back -- bash -c 'mysql -u root -pp@ssword < /tmp/init.sql'
 kubectl exec -it "$pod_name" -n back -- rm /tmp/init.sql
 

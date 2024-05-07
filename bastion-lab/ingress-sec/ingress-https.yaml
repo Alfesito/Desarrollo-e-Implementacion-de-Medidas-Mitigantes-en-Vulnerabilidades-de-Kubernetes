@@ -3,7 +3,8 @@ kind: Ingress
 metadata:
   name: ingress-sec
   annotations:
-     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  namespace: default
 spec:
   tls:
   - hosts:

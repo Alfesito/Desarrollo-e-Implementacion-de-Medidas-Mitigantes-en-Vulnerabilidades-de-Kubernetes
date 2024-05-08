@@ -32,16 +32,18 @@ spec:
     type: Recreate
   template:
     metadata:
-      namespace: back
       labels:
         app: mysql
     spec:
       containers:
       - name: mysql
         image: alfesito/mysql
-        envFrom:
-        - secretRef:
-            name: mysql-secret
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_ROOT_PASSWORD
         ports:
         - containerPort: 3306
           name: mysql
@@ -81,36 +83,3 @@ spec:
   resources:
     requests:
       storage: 1Mi
----
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: adminer-deployment
-#   namespace: back
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: adminer
-#   template:
-#     metadata:
-#       labels:
-#         app: adminer
-#     spec:
-#       containers:
-#         - name: adminer
-#           image: alfesito/adminer
-#           ports:
-#             - containerPort: 8080
-
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: adminer-service
-#   namespace: back
-# spec:
-#   selector:
-#     app: adminer
-#   ports:
-#    - port: 8080

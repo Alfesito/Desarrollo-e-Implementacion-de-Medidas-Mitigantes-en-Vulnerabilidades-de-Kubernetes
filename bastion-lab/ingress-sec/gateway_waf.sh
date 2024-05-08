@@ -4,9 +4,8 @@ kubectl apply -f deploy_waf.yaml
 sleep 10
 
 # Creamos los certificados TLS
-#openssl req -x509 -nodes -days 1000 -newkey rsa:2048 -keyout ingress.key -out ingress.crt -subj "/CN=php.internal/O=security"
-#kubectl create secret tls tls-cert --key ingress.key --cert ingress.crt
-#kubectl apply -f ingress-https.yaml
+openssl req -x509 -nodes -days 1000 -newkey rsa:2048 -keyout ingress.key -out ingress.crt -subj "/CN=php.internal/O=security"
+kubectl create secret tls tls-cert --key ingress.key --cert ingress.crt -n front
 
 # Escribir en /etc/hosts la ip y el dominio
 #ip=$(hostname -I | awk '{print $1}')
@@ -18,5 +17,6 @@ else
     echo "Se ha añadido el dominio php.internal a /etc/hosts"
 fi
 
-cd ..
 kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
+
+cd ..

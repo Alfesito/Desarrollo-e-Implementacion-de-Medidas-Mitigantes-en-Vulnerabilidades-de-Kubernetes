@@ -2,6 +2,8 @@
 
 read -p "¿Vas a hacer uso microk8s? (s/n): " is_microk8s
 
+alias kubectl='microk8s kubectl'
+
 if [ "$is_microk8s" == "s" ]; then
     snap start microk8s
     microk8s start
@@ -37,7 +39,20 @@ if [ "$is_microk8s" == "s" ]; then
 fi
 
 # Aplicamos el ingress security
-sh ./ingress-sec/gateway_waf.sh
+cd ingress-sec
+microk8s kubectl apply -f deploy_waf.yaml
+sleep 10
+openssl req -x509 -nodes -days 1000 -newkey rsa:2048 -keyout ingress.key -out ingress.crt -subj "/CN=php.internal/O=security"
+microk8s kubectl create secret tls tls-cert --key ingress.key --cert ingress.crt -n front
+ip=127.0.0.1
+if grep -q "php.internal" /etc/hosts; then
+    echo "Ya está el dominio php.internal en /etc/hosts"
+else
+    sudo sh -c 'echo "'$ip'  php.internal" >> /etc/hosts'
+    echo "Se ha añadido el dominio php.internal a /etc/hosts"
+fi
+microk8s kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
+cd ..
 
 # Aplicamos el controlador de acceso PodSecurity a todos los namespaces
 microk8s kubectl label --overwrite ns --all pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/enforce-version=v1.30

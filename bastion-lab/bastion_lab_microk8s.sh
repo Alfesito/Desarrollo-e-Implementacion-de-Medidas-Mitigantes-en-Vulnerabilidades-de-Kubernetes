@@ -5,7 +5,6 @@ read -p "¿Vas a hacer uso microk8s? (s/n): " is_microk8s
 if [ "$is_microk8s" == "s" ]; then
     snap start microk8s
     microk8s start
-    fi
 fi
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root

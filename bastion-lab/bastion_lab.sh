@@ -11,7 +11,13 @@ fi
 if [ "$is_microk8s" == "s" ]; then
     snap start microk8s
     microk8s start
-    alias kubectl='microk8s kubectl'
+    bashrc_file="$HOME/.bashrc"
+    if ! grep -q "alias kubectl='microk8s kubectl'" "$bashrc_file"; then
+        echo "alias kubectl='microk8s kubectl'" >> "$bashrc_file"
+    else
+        echo "El alias kubectl ya está configurado en $bashrc_file"
+    fi
+
 fi
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root

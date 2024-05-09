@@ -2,24 +2,6 @@
 
 read -p "¿Vas a hacer uso Minikube? (s/n): " is_minikube
 
-if [ "$is_minikube" == "s" ]; then
-    minikube start
-else
-    read -p "¿Vas a hacer uso microk8s? (s/n): " is_microk8s
-fi
-
-if [ "$is_microk8s" == "s" ]; then
-    snap start microk8s
-    microk8s start
-    bashrc_file="$HOME/.bashrc"
-    if ! grep -q "alias kubectl='microk8s kubectl'" "$bashrc_file"; then
-        echo "alias kubectl='microk8s kubectl'" >> "$bashrc_file"
-    else
-        echo "El alias kubectl ya está configurado en $bashrc_file"
-    fi
-
-fi
-
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl create namespace back 2>/dev/null
 kubectl apply -f backend-sec.yaml
@@ -38,18 +20,6 @@ fi
 mysql_pod_name=$(kubectl get pods -n back | grep -e mysql | awk '{print $1}')
 kubectl cp ../kube-lab/docker-images/mysql/init.sql "$mysql_pod_name":/tmp/init.sql -n back
 kubectl exec -t "$mysql_pod_name" -n back -- bash -c 'mysql -u root -pp@ssword < /tmp/init.sql'
-
-# Aplicamos el controlador de acceso AllwaysPullImages
-if [ [ "$is_minikube" == "n" ] && [ "$is_microk8s" == "s" ] ]; then
-    pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
-    sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' /var/snap/microk8s/6641/args/kube-apiserver
-    sudo sed -i 's/--enable-admission-plugins=EventRateLimits/--enable-admission-plugins=AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
-fi
-
-# Aplicamos el encription provider
-if [ [ "$is_minikube" == "n" ] && [ "$is_microk8s" == "s" ] ]; then
-    sh ./encription-provider/encription_provider.sh
-fi
 
 # Aplicamos el ingress security
 sh ./ingress-sec/gateway_waf.sh

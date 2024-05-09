@@ -1,10 +1,18 @@
 #!/bin/bash
-# Este script está creado para su uso con microk8s, si se utiliza otra herramienta, no se puede asegurar su total funcionamiento
 
-#snap start microk8s
-#microk8s start
-#alias kubectl='microk8s kubectl'
-minikube start
+read -p "¿Vas a hacer uso Minikube? (s/n): " is_minikube
+
+if [ "$is_minikube" == "s" ]; then
+    minikube start
+else
+    read -p "¿Vas a hacer uso microk8s? (s/n): " is_microk8s
+fi
+
+if [ "$is_microk8s" == "s" ]; then
+    snap start microk8s
+    microk8s start
+    alias kubectl='microk8s kubectl'
+fi
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl create namespace back 2>/dev/null
@@ -26,18 +34,22 @@ kubectl cp ../kube-lab/docker-images/mysql/init.sql "$mysql_pod_name":/tmp/init.
 kubectl exec -t "$mysql_pod_name" -n back -- bash -c 'mysql -u root -pp@ssword < /tmp/init.sql'
 
 # Aplicamos el controlador de acceso AllwaysPullImages
-#pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
-#sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' /var/snap/microk8s/6641/args/kube-apiserver
-#sudo sed -i 's/--enable-admission-plugins=EventRateLimits/--enable-admission-plugins=AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
-# Aplicamos el encription provider y reiniciamos el servicio kube-apiserver
-#sh ./encription-provider/encription_provider.sh
+if [ [ "$is_minikube" == "n" ] && [ "$is_microk8s" == "s" ] ]; then
+    pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
+    sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' /var/snap/microk8s/6641/args/kube-apiserver
+    sudo sed -i 's/--enable-admission-plugins=EventRateLimits/--enable-admission-plugins=AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
+fi
+
+# Aplicamos el encription provider
+if [ [ "$is_minikube" == "n" ] && [ "$is_microk8s" == "s" ] ]; then
+    sh ./encription-provider/encription_provider.sh
+fi
 
 # Aplicamos el ingress security
 sh ./ingress-sec/gateway_waf.sh
 
-# Aplicamos el controlador de acceso PodSecurity
-#kubectl label --overwrite ns default pod-security.kubernetes.io/enforce=restricted pod-security.kubernetes.io/enforce-version=v1.30
-#kubectl label --overwrite ns back pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/enforce-version=v1.30
+# Aplicamos el controlador de acceso PodSecurity a todos los namespaces
+kubectl label --overwrite ns --all pod-security.kubernetes.io/enforce=baseline pod-security.kubernetes.io/enforce-version=v1.30
 
 kubectl create ingress php-localhost --class=nginx --rule='php.internal/*=php-page:80',tls=tls-cert -n front
 #kubectl apply -f ./ingress-sec/ingress-https.yaml

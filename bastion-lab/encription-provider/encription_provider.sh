@@ -2,7 +2,6 @@
 #ATENCION! Este script solo está probado para microk8s
 
 ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
-echo $ENCRYPTION_KEY
 
 cd encription-provider
 cat > encryption_provider.yaml <<EOF
@@ -26,4 +25,4 @@ cd ..
 sudo systemctl restart snap.microk8s.daemon-kubelite
 status= $(systemctl is-active snap.microk8s.daemon-kubelite)
 sleep 10
-#kubectl get secrets --all-namespaces -o json | kubectl replace -f --all-namespaces -
+kubectl get secrets --all-namespaces -o json | kubectl replace -f --all-namespaces -

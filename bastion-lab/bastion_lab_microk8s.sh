@@ -26,15 +26,13 @@ mysql_pod_name=$(microk8s kubectl get pods -n back | grep -e mysql | awk '{print
 microk8s kubectl cp ../kube-lab/docker-images/mysql/init.sql "$mysql_pod_name":/tmp/init.sql -n back
 microk8s kubectl exec -t "$mysql_pod_name" -n back -- bash -c 'mysql -u root -pp@ssword < /tmp/init.sql'
 
-# Aplicamos el controlador de acceso AllwaysPullImages
 if [ "$is_microk8s" == "s" ]; then
+    # Aplicamos el controlador de acceso AllwaysPullImages
     pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+'
     sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' /var/snap/microk8s/6641/args/kube-apiserver
     sudo sed -i 's/--enable-admission-plugins=EventRateLimits/--enable-admission-plugins=AllwaysPullImages/' /var/snap/microk8s/6641/args/kube-apiserver
-fi
 
-# Aplicamos el encription provider
-if [ "$is_microk8s" == "s" ]; then
+    # Aplicamos el encription provider
     sh ./encription-provider/encription_provider.sh
 fi
 

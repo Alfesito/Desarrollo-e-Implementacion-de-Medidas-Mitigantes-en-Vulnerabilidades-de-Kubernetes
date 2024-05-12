@@ -2,6 +2,10 @@
 
 read -p "¿Vas a hacer uso Minikube? (s/n): " is_minikube
 
+if [ "$is_minikube" == "s" ]; then
+    minikube start
+fi
+
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root
 kubectl create namespace back 2>/dev/null
 kubectl apply -f backend-sec.yaml

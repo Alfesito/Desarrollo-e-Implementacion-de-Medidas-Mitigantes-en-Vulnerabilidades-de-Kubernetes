@@ -3,7 +3,7 @@
 read -p "¿Vas a hacer uso Minikube? (s/n): " is_minikube
 
 if [ "$is_minikube" == "s" ]; then
-    minikube start
+    minikube start --nodes 2 -p multinode-tfg
 fi
 
 # Creamos los distintos servicios y deployments, con su security context, para que no se ejecuten como root

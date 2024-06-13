@@ -39,6 +39,7 @@ else
 fi
 
 kubectl create ingress php-localhost --class=nginx --rule='php.internal/*=php-page:80' -n default
+echo Visita http://php.internal:8080 para empezar la explotación.
 kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80
 #minikube service --all
 

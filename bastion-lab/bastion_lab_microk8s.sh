@@ -33,8 +33,8 @@ if [ "$is_microk8s" == "s" ]; then
     dir_api=$(pgrep -an kubelite | grep -oP -- '--apiserver-args-file=\K[^ ]+')    sudo sed -i 's/--enable-admission-plugins.*/--enable-admission-plugins=EventRateLimits/' "$dir_api"
     sudo sed -i 's/--enable-admission-plugins=EventRateLimits/--enable-admission-plugins=AllwaysPullImages/' "$dir_api"
 
-    # Aplicamos el encription provider
-    sh ./encription-provider/encription_provider.sh
+    # Aplicamos el encryption provider
+    sh ./encryption-provider/encryption_provider.sh
 fi
 
 # Aplicamos el ingress security

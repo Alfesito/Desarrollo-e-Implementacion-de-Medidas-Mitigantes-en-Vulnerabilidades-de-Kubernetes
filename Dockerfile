@@ -30,4 +30,4 @@ RUN curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/mi
 RUN git clone https://github.com/Alfesito/Desarrollo-e-Implementacion-de-Medidas-Mitigantes-en-Vulnerabilidades-de-Kubernetes.git /root/project
 
 # Define el punto de entrada para el contenedor
-ENTRYPOINT ["/root/Desarrollo-e-Implementacion-de-Medidas-Mitigantes-en-Vulnerabilidades-de-Kubernetes/kube-lab/start_minikube_lab.sh"]
+ENTRYPOINT ["/root/project/kube-lab/start_minikube_lab.sh"]

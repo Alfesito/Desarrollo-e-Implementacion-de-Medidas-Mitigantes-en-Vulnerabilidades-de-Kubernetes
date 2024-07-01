@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  minikube:
+    build: .
+    privileged: true # Necesario para ejecutar VirtualBox dentro del contenedor
+    volumes:
+      - /dev/vboxdrv:/dev/vboxdrv # Necesario para acceder al driver de VirtualBox
+    environment:
+      - MINIKUBE_DRIVER=virtualbox

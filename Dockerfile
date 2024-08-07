@@ -1,33 +1,26 @@
-# Usa la imagen base de Ubuntu
 FROM ubuntu:20.04
 
-# Establece el entorno no interactivo para evitar las preguntas durante la instalación
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Actualiza los paquetes y instala dependencias necesarias
+# Actualizar paquetes e instalar dependencias
 RUN apt-get update && apt-get install -y \
+    curl \
     apt-transport-https \
     ca-certificates \
-    curl \
-    gnupg \
-    lsb-release \
-    git \
-    sudo \
     software-properties-common \
-    virtualbox \
-    virtualbox-ext-pack \
-    && apt-get clean
+    conntrack
 
-# Instala kubectl
-RUN apt-get update && apt-get install -y kubectl
+# Instalar Docker
+RUN apt-get update && \
+    apt-get install -y docker.io
 
-# Instala Minikube
+# Instalar Minikube
 RUN curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && \
     chmod +x minikube && \
     mv minikube /usr/local/bin/
 
-# Clona el repositorio específico
-RUN git clone https://github.com/Alfesito/Desarrollo-e-Implementacion-de-Medidas-Mitigantes-en-Vulnerabilidades-de-Kubernetes.git /root/project
+# Instalar kubectl
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv kubectl /usr/local/bin/
 
-# Define el punto de entrada para el contenedor
-ENTRYPOINT ["/root/project/kube-lab/start_minikube_lab.sh"]
+# Configurar el punto de entrada
+ENTRYPOINT ["minikube", "start", "--driver=docker"]
